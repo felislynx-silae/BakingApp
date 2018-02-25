@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,17 +58,14 @@ public class StepFragment extends Fragment {
 
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
-
         }
 
         @Override
         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
         }
 
         @Override
         public void onLoadingChanged(boolean isLoading) {
-
         }
 
         @Override
@@ -84,32 +82,26 @@ public class StepFragment extends Fragment {
 
         @Override
         public void onRepeatModeChanged(int repeatMode) {
-
         }
 
         @Override
         public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
         }
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-
         }
 
         @Override
         public void onPositionDiscontinuity(int reason) {
-
         }
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
         }
 
         @Override
         public void onSeekProcessed() {
-
         }
     };
 
