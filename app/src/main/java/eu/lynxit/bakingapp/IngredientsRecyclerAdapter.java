@@ -53,8 +53,8 @@ public class IngredientsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
 
         public void bind(final Ingredient ingredientDTO) {
             mName.setText(ingredientDTO.getIngredient());
-            mQuantity.setText(String.format("$1%2d", ingredientDTO.getQuantity()));
             mUnit.setText(ingredientDTO.getMeasure());
+            mQuantity.setText(String.format(" %.2f", ingredientDTO.getQuantity()));
         }
     }
 }

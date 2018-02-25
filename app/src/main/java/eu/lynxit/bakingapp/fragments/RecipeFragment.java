@@ -44,7 +44,8 @@ public class RecipeFragment extends Fragment {
             @Override
             public void onItemClicked(Integer position, Step step) {
                 ((MainActivity) getActivity()).mViewModel.setSelectedStep(step);
-                ((MainActivity) getActivity()).startFragment(new StepFragment(), true, false);
+                StepFragment fragment = new StepFragment();
+                ((MainActivity) getActivity()).startFragment(fragment, true, false);
             }
         });
         steps.setAdapter(stepsAdapter);

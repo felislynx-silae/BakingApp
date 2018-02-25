@@ -64,12 +64,7 @@ public class StepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     }
                 }
             });
-            /*RequestBuilder builder = Glide.with(thumbnailView).load(BuildConfig.IMG_ENDPOINT+"w185" + stepDTO.getPoster_path());
-            RequestOptions options = new RequestOptions();
-            options.placeholder(R.drawable.ic_movie);
-            options.diskCacheStrategy(DiskCacheStrategy.ALL);
-            builder.apply(options);
-            builder.into(thumbnailView);*/
+            mName.setText(stepDTO.getShortDescription());
         }
     }
 

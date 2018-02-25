@@ -8,6 +8,7 @@
         android:id="@+id/fragment_step_player"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -15,19 +16,12 @@
 
     <ImageView
         android:id="@+id/fragment_step_image"
-        app:layout_constraintTop_toTopOf="@+id/fragment_step_player"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_step_player"
-        app:layout_constraintRight_toRightOf="@+id/fragment_step_player"
-        app:layout_constraintLeft_toLeftOf="@+id/fragment_step_player"
-        android:visibility="gone"
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/fragment_step_description"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_step_player" />
+        android:layout_height="0dp" />
 </android.support.constraint.ConstraintLayout>
