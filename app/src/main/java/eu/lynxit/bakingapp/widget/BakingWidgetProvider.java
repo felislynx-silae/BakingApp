@@ -9,7 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import eu.lynxit.bakingapp.BakingAppApplication;
 import eu.lynxit.bakingapp.R;
+import eu.lynxit.bakingapp.activities.MainActivity;
+import eu.lynxit.bakingapp.database.RecipeEntity;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by lynx on 24/02/18.
@@ -19,6 +24,7 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
         update(context);
     }
 
@@ -59,7 +65,19 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews generateRemoteView(Context context, int id, int recipeId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingridients);
+        RecipeEntity entity = BakingAppApplication.getInstance().getDatabase().recipeDAO()
+                .findRecipe(recipeId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .blockingGet();
+        if (entity != null) {
+            views.setTextViewText(R.id.widget_ingredient_name, entity.name);
+        }
 
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("DD", recipeId);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_ingredient_name, pendingIntent);
         Intent listIntent = new Intent(context, BakingWidgetService.class);
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
         listIntent.setData(Uri.parse(listIntent.toUri(Intent.URI_INTENT_SCHEME)));

@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import eu.lynxit.bakingapp.R;
-import eu.lynxit.bakingapp.RecipiesRecyclerAdapter;
+import eu.lynxit.bakingapp.adapters.RecipiesRecyclerAdapter;
 import eu.lynxit.bakingapp.activities.MainActivity;
 import eu.lynxit.bakingapp.model.Recipe;
 

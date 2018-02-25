@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import eu.lynxit.bakingapp.IngredientsRecyclerAdapter;
+import eu.lynxit.bakingapp.adapters.IngredientsRecyclerAdapter;
 import eu.lynxit.bakingapp.R;
-import eu.lynxit.bakingapp.StepsRecyclerAdapter;
+import eu.lynxit.bakingapp.adapters.StepsRecyclerAdapter;
 import eu.lynxit.bakingapp.activities.MainActivity;
 import eu.lynxit.bakingapp.model.Recipe;
 import eu.lynxit.bakingapp.model.Step;

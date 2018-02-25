@@ -1,15 +1,15 @@
-package eu.lynxit.bakingapp;
+package eu.lynxit.bakingapp.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.lynxit.bakingapp.R;
 import eu.lynxit.bakingapp.model.Step;
 
 /**

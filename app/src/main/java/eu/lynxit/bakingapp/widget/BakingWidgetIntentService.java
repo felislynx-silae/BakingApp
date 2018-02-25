@@ -24,7 +24,7 @@ public class BakingWidgetIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            final int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, 0);
+            final int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, 1);
             final int widgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
             if (ACTION_NEXT.equals(action)) {
                 next(widgetId, recipeId);
@@ -51,7 +51,7 @@ public class BakingWidgetIntentService extends IntentService {
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingWidgetProvider.class));
         int[] recipeIds = new int[appWidgetIds.length];
         for (int i = 0; i < appWidgetIds.length; i++) {
-            recipeIds[i] = 0;
+            recipeIds[i] = 1;
         }
         BakingWidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, recipeIds);
     }

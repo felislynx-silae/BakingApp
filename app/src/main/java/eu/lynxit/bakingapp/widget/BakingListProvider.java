@@ -7,10 +7,17 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import eu.lynxit.bakingapp.BakingAppApplication;
 import eu.lynxit.bakingapp.R;
+import eu.lynxit.bakingapp.database.RecipeEntity;
 import eu.lynxit.bakingapp.model.Ingredient;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by lynx on 24/02/18.
@@ -26,14 +33,21 @@ public class BakingListProvider implements RemoteViewsService.RemoteViewsFactory
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
+        Integer recipeId = intent.getIntExtra(EXTRA_RECIPE_ID,
+                1);
         ingredientList.clear();
-        // todo EXTRA_RECIPE_ID <-- extract from db
-        for (int i = 0; i < 10; i++) {
-            Ingredient ingredient = new Ingredient();
-            ingredient.setQuantity(1.25*i);
-            ingredient.setMeasure("Test "+i);
-            ingredient.setIngredient("Ingr "+i);
-            ingredientList.add(ingredient);
+        RecipeEntity entity = BakingAppApplication.getInstance().getDatabase().recipeDAO()
+                .findRecipe(recipeId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .blockingGet();
+        try {
+            String ingredients = entity.ingredients;
+            ObjectMapper mapper = new ObjectMapper();
+            Ingredient[] array = mapper.readValue(ingredients, Ingredient[].class);
+            ingredientList.addAll(Arrays.asList(array));
+        } catch (Exception e){
+            Log.d("Lynx", "BŁĄD");
         }
     }
 
