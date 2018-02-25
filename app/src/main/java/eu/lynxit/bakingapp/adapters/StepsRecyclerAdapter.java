@@ -48,10 +48,12 @@ public class StepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     class StepHolder extends RecyclerView.ViewHolder {
         private TextView mName;
+        private TextView mId;
 
         public StepHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.listview_item_step_name);
+            mId = itemView.findViewById(R.id.listview_item_step_id);
         }
 
         public void bind(final Step stepDTO, final Integer position) {
@@ -64,6 +66,7 @@ public class StepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     }
                 }
             });
+            mId.setText(position.toString());
             mName.setText(stepDTO.getShortDescription());
         }
     }

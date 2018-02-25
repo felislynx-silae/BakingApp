@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,6 +36,9 @@ public class RecipeFragment extends Fragment {
         RecyclerView ingredients = view.findViewById(R.id.fragment_recipe_steps_ingredients);
         ingredients.setLayoutManager(new LinearLayoutManager(getContext()));
         IngredientsRecyclerAdapter ingredientsAdapter = new IngredientsRecyclerAdapter();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(),
+                ((LinearLayoutManager) ingredients.getLayoutManager()).getOrientation());
+        ingredients.addItemDecoration(dividerItemDecoration);
         ingredients.setAdapter(ingredientsAdapter);
         ingredientsAdapter.replaceItems(selectedRecipe.getIngredients());
         RecyclerView steps = view.findViewById(R.id.fragment_recipe_steps);
@@ -50,5 +54,16 @@ public class RecipeFragment extends Fragment {
         });
         steps.setAdapter(stepsAdapter);
         stepsAdapter.replaceItems(selectedRecipe.getSteps());
+        if (view.findViewById(R.id.fragment_recipe_step_frame) != null) {
+            ((MainActivity) getActivity()).mViewModel.setSelectedStep(selectedRecipe.getSteps().get(0));
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fragment_recipe_step_frame, new StepFragment()).commit();
+            stepsAdapter.setOnItemClickListener(new StepsRecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClicked(Integer position, Step step) {
+                    ((MainActivity) getActivity()).mViewModel.setSelectedStep(step);
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_recipe_step_frame, new StepFragment()).commit();
+                }
+            });
+        }
     }
 }
