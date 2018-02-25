@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +32,13 @@ public class RecipeListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView recyclerView = view.findViewById(R.id.fragment_recipe_list_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        if(dpWidth>=600){
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }
         RecipiesRecyclerAdapter adapter = new RecipiesRecyclerAdapter();
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new RecipiesRecyclerAdapter.OnItemClickListener() {
@@ -42,5 +50,6 @@ public class RecipeListFragment extends Fragment {
         });
         adapter.replaceItems(((MainActivity) getActivity()).mViewModel.getRecipes());
         ((MainActivity) getActivity()).setTitle("BakingApp");
+
     }
 }
