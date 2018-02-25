@@ -65,5 +65,6 @@ public class RecipeFragment extends Fragment {
                 }
             });
         }
+        ((MainActivity) getActivity()).setTitle(selectedRecipe.getName());
     }
 }

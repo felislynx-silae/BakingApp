@@ -41,5 +41,6 @@ public class RecipeListFragment extends Fragment {
             }
         });
         adapter.replaceItems(((MainActivity) getActivity()).mViewModel.getRecipes());
+        ((MainActivity) getActivity()).setTitle("BakingApp");
     }
 }

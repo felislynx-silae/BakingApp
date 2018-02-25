@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 import eu.lynxit.bakingapp.MainViewModel;
 import eu.lynxit.bakingapp.R;
 import eu.lynxit.bakingapp.fragments.RecipeListFragment;
+
 public class MainActivity extends AppCompatActivity {
     private Fragment mCurrentFragment;
     private ImageView mBackButton;
@@ -26,11 +28,15 @@ public class MainActivity extends AppCompatActivity {
             onBackPressed();
         }
     };
+    private TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mTitle = findViewById(R.id.activity_main_toolbar_title);
+        mBackButton = findViewById(R.id.activity_main_toolbar_back);
+        mBackButton.setOnClickListener(mOnBackClickListener);
         mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mViewModel.initializeRecipes(this);
         Toolbar toolbar = findViewById(R.id.activity_main_toolbar);
@@ -43,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
                     if (fragment != null && fragment.isVisible()) {
                         mCurrentFragment = fragment;
                     }
+                }
+
+                if(mCurrentFragment instanceof RecipeListFragment){
+                    mBackButton.setVisibility(View.GONE);
+                } else {
+                    mBackButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -74,7 +86,21 @@ public class MainActivity extends AppCompatActivity {
             if (addToBackStack) {
                 transaction.addToBackStack(fragment.getTag());
             }
+            if(mCurrentFragment instanceof RecipeListFragment){
+                mBackButton.setVisibility(View.GONE);
+            } else {
+                mBackButton.setVisibility(View.VISIBLE);
+            }
             transaction.commitAllowingStateLoss();
         }
+    }
+
+    public void setTitle(final String title) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTitle.setText(title);
+            }
+        });
     }
 }
