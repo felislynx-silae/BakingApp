@@ -19,7 +19,6 @@ import eu.lynxit.bakingapp.model.Step;
 public class StepsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Step> mItems = new ArrayList<>();
     private OnItemClickListener mItemClickListener;
-    private int selectedItem = -1;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -3,15 +3,14 @@ package eu.lynxit.bakingapp.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import eu.lynxit.bakingapp.BakingAppApplication;
 import eu.lynxit.bakingapp.R;
-import eu.lynxit.bakingapp.activities.MainActivity;
 import eu.lynxit.bakingapp.database.RecipeEntity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -54,7 +53,8 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     public static void updateSingleWidget(Context context, AppWidgetManager appWidgetManager, int id, int recipeId) {
         RemoteViews rv = generateRemoteView(context, id, recipeId);
-        appWidgetManager.updateAppWidget(id, rv);
+        appWidgetManager.updateAppWidget(new ComponentName(context, BakingWidgetProvider.class), rv);
+        appWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.widget_content);
     }
 
     private static void update(Context context) {
@@ -65,22 +65,25 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews generateRemoteView(Context context, int id, int recipeId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingridients);
+        if(recipeId<1){
+            recipeId = 1;
+        }
         RecipeEntity entity = BakingAppApplication.getInstance().getDatabase().recipeDAO()
                 .findRecipe(recipeId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .blockingGet();
         if (entity != null) {
-            views.setTextViewText(R.id.widget_ingredient_name, entity.name);
+            views.setTextViewText(R.id.widget_title, entity.name);
+        } else {
+            if(recipeId>1) {
+                recipeId -= 1;
+            }
         }
 
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("DD", recipeId);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setOnClickPendingIntent(R.id.widget_ingredient_name, pendingIntent);
         Intent listIntent = new Intent(context, BakingWidgetService.class);
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-        listIntent.setData(Uri.parse(listIntent.toUri(Intent.URI_INTENT_SCHEME)));
+        listIntent.putExtra(BakingListProvider.EXTRA_RECIPE_ID, recipeId);
         views.setRemoteAdapter(R.id.widget_content, listIntent);
 
         Intent nextIntent = new Intent(context, BakingWidgetIntentService.class);
@@ -93,9 +96,14 @@ public class BakingWidgetProvider extends AppWidgetProvider {
         Intent prevIntent = new Intent(context, BakingWidgetIntentService.class);
         prevIntent.putExtra(BakingWidgetIntentService.EXTRA_RECIPE_ID, recipeId);
         prevIntent.putExtra(BakingWidgetIntentService.EXTRA_WIDGET_ID, id);
-        nextIntent.setAction(BakingWidgetIntentService.ACTION_PREV);
+        prevIntent.setAction(BakingWidgetIntentService.ACTION_PREV);
         PendingIntent prevPendingIntent = PendingIntent.getService(context, 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.widget_prev, prevPendingIntent);
+
+        Intent updateList = new Intent(BakingListProvider.ACTION_UPDATE_RECIPE);
+        updateList.putExtra(BakingListProvider.EXTRA_RECIPE_ID,recipeId);
+        updateList.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id);
+        context.sendBroadcast(updateList);
 
         return views;
     }

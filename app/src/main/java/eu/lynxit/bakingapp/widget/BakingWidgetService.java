@@ -13,4 +13,5 @@ public class BakingWidgetService extends RemoteViewsService {
         return (new BakingListProvider(this.getApplicationContext(),
                 intent));
     }
+
 }

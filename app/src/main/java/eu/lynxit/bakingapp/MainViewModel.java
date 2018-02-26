@@ -1,9 +1,7 @@
 package eu.lynxit.bakingapp;
 
 import android.arch.lifecycle.ViewModel;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,7 +73,7 @@ public class MainViewModel extends ViewModel {
                             }
                         });
             } catch (Exception e) {
-                Log.d("Lynx", "Exception");
+                Log.d("MainViewModel", "Exception");
             }
         }
     }

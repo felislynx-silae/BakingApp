@@ -38,12 +38,12 @@ public class BakingWidgetIntentService extends IntentService {
 
     private void next(int widgetId, int currentId) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        BakingWidgetProvider.updateSingleWidget(this, appWidgetManager, widgetId, currentId++);
+        BakingWidgetProvider.updateSingleWidget(this, appWidgetManager, widgetId, currentId+1);
     }
 
     private void prev(int widgetId, int currentId) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        BakingWidgetProvider.updateSingleWidget(this, appWidgetManager, widgetId, currentId++);
+        BakingWidgetProvider.updateSingleWidget(this, appWidgetManager, widgetId, currentId-1);
     }
 
     private void update() {

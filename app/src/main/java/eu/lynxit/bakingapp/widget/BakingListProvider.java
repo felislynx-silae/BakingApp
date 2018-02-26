@@ -1,8 +1,10 @@
 package eu.lynxit.bakingapp.widget;
 
 import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -25,45 +27,62 @@ import io.reactivex.schedulers.Schedulers;
 
 public class BakingListProvider implements RemoteViewsService.RemoteViewsFactory {
     public static final String EXTRA_RECIPE_ID = "eu.lynxit.bakingapp.extra.RECIPE_ID";
+    public static final String ACTION_UPDATE_RECIPE = "eu.lynxit.bakingapp.action.UPDATE_RECIPE";
     private ArrayList<Ingredient> ingredientList = new ArrayList();
     private Context context = null;
-    private int appWidgetId;
-
+    int recipeId = 1;
+    int appWidgetId = 0;
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int tmpWidgetID = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            if(tmpWidgetID == appWidgetId) {
+                recipeId = intent.getIntExtra(EXTRA_RECIPE_ID,
+                        1);
+            }
+        }
+    };
     public BakingListProvider(Context context, Intent intent) {
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        Integer recipeId = intent.getIntExtra(EXTRA_RECIPE_ID,
+        recipeId = intent.getIntExtra(EXTRA_RECIPE_ID,
                 1);
-        ingredientList.clear();
-        RecipeEntity entity = BakingAppApplication.getInstance().getDatabase().recipeDAO()
-                .findRecipe(recipeId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .blockingGet();
-        try {
-            String ingredients = entity.ingredients;
-            ObjectMapper mapper = new ObjectMapper();
-            Ingredient[] array = mapper.readValue(ingredients, Ingredient[].class);
-            ingredientList.addAll(Arrays.asList(array));
-        } catch (Exception e){
-            Log.d("Lynx", "BŁĄD");
-        }
     }
 
     @Override
     public void onCreate() {
-
+        context.registerReceiver(receiver,new IntentFilter(ACTION_UPDATE_RECIPE));
     }
 
     @Override
     public void onDataSetChanged() {
-
+        ingredientList.clear();
+        RecipeEntity entity = BakingAppApplication.getInstance().getDatabase().recipeDAO()
+                .findRecipe(recipeId)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .blockingGet();
+        if(entity != null) {
+            try {
+                String ingredients = entity.ingredients;
+                ObjectMapper mapper = new ObjectMapper();
+                Ingredient[] array = mapper.readValue(ingredients, Ingredient[].class);
+                ingredientList.addAll(Arrays.asList(array));
+            } catch (Exception e) {
+                Log.d("BakingListProvider", "Error " + e.getMessage() + " " + e.getClass().getName());
+            }
+        }
     }
 
     @Override
     public void onDestroy() {
+        try{
+            context.unregisterReceiver(receiver);
+        } catch (Exception e){
 
+        }
     }
 
     @Override
