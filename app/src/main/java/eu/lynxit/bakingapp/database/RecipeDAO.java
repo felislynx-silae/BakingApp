@@ -10,6 +10,7 @@ import android.arch.persistence.room.Update;
 import java.util.List;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 /**
  * Created by lynx on 25/02/18.
@@ -33,4 +34,7 @@ public interface RecipeDAO {
 
     @Query("SELECT * FROM RecipeEntity WHERE recipeId == :rid")
     public Maybe<RecipeEntity> findRecipe(Integer rid);
+
+    @Query("SELECT COUNT(recipeId) FROM RecipeEntity")
+    public Single<Integer> getNumberOfRows();
 }

@@ -1,6 +1,5 @@
 package eu.lynxit.bakingapp.fragments;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,7 +36,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
-import eu.lynxit.bakingapp.MainViewModel;
 import eu.lynxit.bakingapp.R;
 import eu.lynxit.bakingapp.activities.MainActivity;
 import eu.lynxit.bakingapp.model.Step;
@@ -47,13 +45,16 @@ import eu.lynxit.bakingapp.model.Step;
  */
 
 public class StepFragment extends Fragment {
+    public static final String EXTRA_PLAYTIME = "eu.lynxit.bakingapp.extra.EXTRA_PLAYTIME";
     private Step mStep;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private SimpleExoPlayer mPlayer;
     private SimpleExoPlayerView mPlayerView;
+    private ImageView thumbnail;
     private TrackSelector mTrackSelector = new DefaultTrackSelector();
     private LoadControl mLoadControl = new DefaultLoadControl();
+    private Long mPlaytime = -1L;
     private ExoPlayer.EventListener mListener = new ExoPlayer.EventListener() {
 
         @Override
@@ -116,13 +117,18 @@ public class StepFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mStep = ((MainActivity) getActivity()).mViewModel.getSelectedStep();
         mPlayerView = view.findViewById(R.id.fragment_step_player);
+        thumbnail = view.findViewById(R.id.fragment_step_image);
         TextView mDescription = view.findViewById(R.id.fragment_step_description);
         mDescription.setText(mStep.getDescription());
         initializeMediaSession();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (mStep.getVideoURL() != null) {
             initPlayer(Uri.parse(mStep.getVideoURL()));
         } else if (mStep.getThumbnailURL() != null) {
-            ImageView thumbnail = view.findViewById(R.id.fragment_step_image);
             RequestBuilder builder = Glide.with(thumbnail).load(mStep.getThumbnailURL());
             RequestOptions options = new RequestOptions();
             options.diskCacheStrategy(DiskCacheStrategy.ALL);
@@ -156,14 +162,33 @@ public class StepFragment extends Fragment {
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), "BakingAppAgent"), new DefaultExtractorsFactory(), null, null);
             mPlayer.prepare(mediaSource);
+            Log.d("StepFragment", "PlayTime " + mPlaytime);
+            if (mPlaytime > 0) {
+                mPlayer.seekTo(mPlaytime);
+            }
             mPlayer.setPlayWhenReady(true);
         }
     }
 
     private void releasePlayer() {
-        mPlayer.stop();
-        mPlayer.release();
-        mPlayer = null;
+        if (mPlayer != null) {
+            mPlaytime = mPlayer.getCurrentPosition();
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
     }
 
     @Override
@@ -173,5 +198,19 @@ public class StepFragment extends Fragment {
         mMediaSession.setActive(false);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(EXTRA_PLAYTIME, mPlaytime);
+        Log.d("StepFragment","Putting "+mPlaytime);
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            mPlaytime = savedInstanceState.getLong(EXTRA_PLAYTIME, -1L);
+            Log.d("StepFragment","Restored "+mPlaytime);
+        }
+    }
 }

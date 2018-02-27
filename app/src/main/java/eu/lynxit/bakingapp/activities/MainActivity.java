@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         mBackButton = findViewById(R.id.activity_main_toolbar_back);
         mBackButton.setOnClickListener(mOnBackClickListener);
         mViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        mViewModel.initializeRecipes(this);
         Toolbar toolbar = findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

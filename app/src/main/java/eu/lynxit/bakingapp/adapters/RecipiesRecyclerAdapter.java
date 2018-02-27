@@ -4,7 +4,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,10 +53,12 @@ public class RecipiesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     class RecipieHolder extends RecyclerView.ViewHolder {
         private TextView mName;
+        private ImageView mThumbnail;
 
         public RecipieHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.listview_item_recipe_name);
+            mThumbnail = itemView.findViewById(R.id.listview_item_recipe_thumbnail);
         }
 
         public void bind(final Recipe recipeDTO, final Integer position) {
@@ -63,6 +71,12 @@ public class RecipiesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                 }
             });
             mName.setText(recipeDTO.getName());
+            RequestBuilder builder = Glide.with(itemView.getContext()).load(recipeDTO.getImage());
+            RequestOptions options = new RequestOptions();
+            options.placeholder(R.drawable.ic_placeholder);
+            options.diskCacheStrategy(DiskCacheStrategy.ALL);
+            builder.apply(options);
+            builder.into(mThumbnail);
         }
     }
 
